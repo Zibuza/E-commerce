@@ -10,13 +10,11 @@
           <a href="#"><router-link class="link" to="/">Home</router-link></a>
         </li>
         <li>
-          <a href="#"
-            ><router-link class="link" to="/cart">Cart</router-link></a
-          >
+          <a href="#"><router-link class="link" to="/cart">Cart</router-link></a>
         </li>
         <li><a href="#">Sign Up</a></li>
         <li><a href="#">Order Tracking</a></li>
-        
+
       </div>
       <div class="search-icon">
         <span class="fas fa-search"></span>
@@ -24,16 +22,20 @@
       <div class="cancel-icon">
         <span class="fas fa-times"></span>
       </div>
-      <form action="#">
-        <input
-          type="search"
-          class="search-data"
-          placeholder="Search"
-          required
-        />
-        <button type="submit" class="fas fa-search"></button>
+      <form >
+        <input type="search" v-model="searchText" class="search-data" placeholder="Search"  />
+        <button type="button" class="fas fa-search"></button>
+
+
+        <div class="found" v-if="product.length > 0" @click="openInner(product[0].id)" >
+          <img class="product-thumbnail" :src="product[0].thumbnail" alt="Product Thumbnail">
+          <p class="product-title">{{ product[0].title }}</p>
+          <p>{{ product[0].price }}$</p>
+          
+        </div>
       </form>
     </nav>
+
     <router-view></router-view>
   </body>
 </template>
@@ -46,11 +48,34 @@ export default {
   data() {
     return {
       count: null,
-      total: null
+      total: null,
+      searchText:null,
+      product: {}
     };
 
   },
+  mounted(){
+    if (localStorage.getItem("products")){
+      store.commit("replaceAll", JSON.parse(localStorage.getItem("products")))
+    }
+  },
+  methods:{
+    openInner(id) {
+        console.log(id);
+        this.$router.push({ path: "Inner", query: { plan: id } });
+      }
+  }, 
   computed: {
+    filter_products(){
+      if (this.searchText){
+        this.product = store.getters.get_products.filter(product => product.title.toLowerCase().includes(this.searchText.toLowerCase()))
+        
+        
+      }
+      else{
+        this.product = ""
+      }
+    },
     getProducts() {
       return store.getters.get_products;
     },
@@ -70,19 +95,21 @@ export default {
 </script>
 
 <style scoped>
-
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap');
-*{
+
+* {
   margin: 0;
   padding: 0;
   outline: none;
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
 }
-body{
+
+body {
   background: #f2f2f2;
 }
-nav{
+
+nav {
   background: #171c24;
   display: flex;
   flex-wrap: wrap;
@@ -91,40 +118,47 @@ nav{
   height: 70px;
   padding: 0 100px;
 }
-nav .logo{
+
+nav .logo {
   color: #fff;
   font-size: 30px;
   font-weight: 600;
   letter-spacing: -1px;
 }
-nav .nav-items{
+
+nav .nav-items {
   display: flex;
   flex: 1;
   padding: 0 0 0 40px;
 }
-nav .nav-items li{
+
+nav .nav-items li {
   list-style: none;
   padding: 0 15px;
 }
-nav .nav-items li a{
+
+nav .nav-items li a {
   color: #fff;
   font-size: 18px;
   font-weight: 500;
   text-decoration: none;
 }
-nav .nav-items li a:hover{
+
+nav .nav-items li a:hover {
   color: #ff3d00;
 }
-nav form{
+
+nav form {
   display: flex;
   height: 40px;
   padding: 2px;
   background: #1e232b;
-  min-width: 18%!important;
+  min-width: 18% !important;
   border-radius: 2px;
-  border: 1px solid rgba(155,155,155,0.2);
+  border: 1px solid rgba(155, 155, 155, 0.2);
 }
-nav form .search-data{
+
+nav form .search-data {
   width: 100%;
   height: 100%;
   padding: 0 10px;
@@ -134,7 +168,8 @@ nav form .search-data{
   font-weight: 500;
   background: none;
 }
-nav form button{
+
+nav form button {
   padding: 0 15px;
   color: #fff;
   font-size: 17px;
@@ -143,12 +178,14 @@ nav form button{
   border-radius: 2px;
   cursor: pointer;
 }
-nav form button:hover{
+
+nav form button:hover {
   background: #e63600;
 }
+
 nav .menu-icon,
 nav .cancel-icon,
-nav .search-icon{
+nav .search-icon {
   width: 40px;
   text-align: center;
   margin: 0 50px;
@@ -157,25 +194,30 @@ nav .search-icon{
   cursor: pointer;
   display: none;
 }
+
 nav .menu-icon span,
 nav .cancel-icon,
-nav .search-icon{
+nav .search-icon {
   display: none;
 }
+
 @media (max-width: 1245px) {
-  nav{
+  nav {
     padding: 0 50px;
   }
 }
-@media (max-width: 1140px){
-  nav{
+
+@media (max-width: 1140px) {
+  nav {
     padding: 0px;
   }
-  nav .logo{
+
+  nav .logo {
     flex: 2;
     text-align: center;
   }
-  nav .nav-items{
+
+  nav .nav-items {
     position: fixed;
     z-index: 99;
     top: 70px;
@@ -188,17 +230,21 @@ nav .search-icon{
     display: inline-block;
     transition: left 0.3s ease;
   }
-  nav .nav-items.active{
+
+  nav .nav-items.active {
     left: 0px;
   }
-  nav .nav-items li{
+
+  nav .nav-items li {
     line-height: 40px;
     margin: 30px 0;
   }
-  nav .nav-items li a{
+
+  nav .nav-items li a {
     font-size: 20px;
   }
-  nav form{
+
+  nav form {
     position: absolute;
     top: 80px;
     right: 50px;
@@ -206,12 +252,14 @@ nav .search-icon{
     pointer-events: none;
     transition: top 0.3s ease, opacity 0.1s ease;
   }
-  nav form.active{
+
+  nav form.active {
     top: 95px;
     opacity: 1;
     pointer-events: auto;
   }
-  nav form:before{
+
+  nav form:before {
     position: absolute;
     content: "";
     top: -13px;
@@ -223,7 +271,8 @@ nav .search-icon{
     border-bottom-color: #1e232b;
     margin: -20px 0 0;
   }
-  nav form:after{
+
+  nav form:after {
     position: absolute;
     content: '';
     height: 60px;
@@ -236,76 +285,103 @@ nav .search-icon{
     top: 50%;
     transform: translate(-50%, -50%);
   }
-  nav .menu-icon{
+
+  nav .menu-icon {
     display: block;
   }
+
   nav .search-icon,
-  nav .menu-icon span{
+  nav .menu-icon span {
     display: block;
   }
+
   nav .menu-icon span.hide,
-  nav .search-icon.hide{
+  nav .search-icon.hide {
     display: none;
   }
-  nav .cancel-icon.show{
+
+  nav .cancel-icon.show {
     display: block;
   }
 }
-.content{
+
+.content {
   position: absolute;
   top: 50%;
   left: 50%;
   text-align: center;
   transform: translate(-50%, -50%);
 }
-.content header{
+
+.content header {
   font-size: 30px;
   font-weight: 700;
 }
-.content .text{
+
+.content .text {
   font-size: 30px;
   font-weight: 700;
 }
-.space{
+
+.space {
   margin: 10px 0;
 }
-nav .logo.space{
+
+nav .logo.space {
   color: red;
   padding: 0 5px 0 0;
 }
-@media (max-width: 980px){
+
+@media (max-width: 980px) {
+
   nav .menu-icon,
   nav .cancel-icon,
-  nav .search-icon{
+  nav .search-icon {
     margin: 0 20px;
   }
-  nav form{
+
+  nav form {
     right: 30px;
   }
 }
-@media (max-width: 350px){
+
+@media (max-width: 350px) {
+
   nav .menu-icon,
   nav .cancel-icon,
-  nav .search-icon{
+  nav .search-icon {
     margin: 0 10px;
     font-size: 16px;
   }
 }
-.content{
+
+.content {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.content header{
+
+.content header {
   font-size: 30px;
   font-weight: 700;
 }
-.content .text{
+
+.content .text {
   font-size: 30px;
   font-weight: 700;
 }
-.content .space{
+
+.content .space {
   margin: 10px 0;
 }
+
+.found{
+  position: absolute;
+  top:70px;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+
 </style>

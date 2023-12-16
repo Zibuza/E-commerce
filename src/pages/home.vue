@@ -26,7 +26,6 @@ export default {
     if (localStorage.getItem("products")){
       store.commit("replaceAll", JSON.parse(localStorage.getItem("products")))
     }
-    console.log(store.state.products)
   }
 }
 </script>
