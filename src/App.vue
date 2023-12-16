@@ -27,10 +27,10 @@
         <button type="button" class="fas fa-search"></button>
 
 
-        <div class="found" v-if="product.length > 0" @click="openInner(product[0].id)" >
-          <img class="product-thumbnail" :src="product[0].thumbnail" alt="Product Thumbnail">
-          <p class="product-title">{{ product[0].title }}</p>
-          <p>{{ product[0].price }}$</p>
+        <div class="found" v-if="filter_products.length > 0" @click="openInner(filter_products[0].id)" >
+          <img class="product-thumbnail" :src="filter_products[0].thumbnail" alt="Product Thumbnail">
+          <p class="product-title">{{ filter_products[0].title }}</p>
+          <p>{{ filter_products[0].price }}$</p>
           
         </div>
       </form>
@@ -43,6 +43,8 @@
 <script>
 
 import store from "./store";
+import Products from "./products.json"
+
 
 export default {
   data() {
@@ -50,7 +52,8 @@ export default {
       count: null,
       total: null,
       searchText:null,
-      product: {}
+      product: {},
+      products: Products,
     };
 
   },
@@ -68,14 +71,13 @@ export default {
   computed: {
     filter_products(){
       if (this.searchText){
-        this.product = store.getters.get_products.filter(product => product.title.toLowerCase().includes(this.searchText.toLowerCase()))
-        
-        
+        return this.products.filter(product => product.title.toLowerCase().includes(this.searchText.toLowerCase()))
       }
       else{
-        this.product = ""
+        return {}
       }
     },
+    
     getProducts() {
       return store.getters.get_products;
     },
